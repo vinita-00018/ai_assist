@@ -56,7 +56,7 @@ def chat_with_gpt(prompt, hash_session="", api_call=1):
 
         logging.info(f"Final Payload Sent:\n{json.dumps(outer_payload, indent=2)}")
 
-        response = requests.post(API_URL, headers=HEADERS, cookies=cookies, json=outer_payload, timeout=60)
+        response = requests.post(API_URL, headers=HEADERS, cookies=cookies, json=outer_payload, timeout=120)
 
         if response.status_code == 200:
             return response.text
