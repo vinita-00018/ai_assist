@@ -7,28 +7,28 @@ logging.basicConfig(level=logging.INFO)
 
 API_URL = "https://ai.qeapps.com/sidekick/post_generate_content_only"
 cookies = {
-    '_ga_17JT343DSW': 'GS1.1.1743759017.1.0.1743759017.0.0.0',
-    '_ga': 'GA1.1.1543127679.1743759017',
-    '_clck': 'iwmsvv%7C2%7Cfvh%7C0%7C1926',
-    'twk_idm_key': 't5HWpSDJgnDq_5OFblGcb',
+    '_clck': 'tuurk7%7C2%7Cfwc%7C0%7C1973',
+    'connect.sid': 's%3AYfI7ooqZMSZOgg4Fp7cqxe_kqQ1R-Dpj.rs%2FLqN5aSx6ANq6M1XiE2mCOswvUvp1YyNgf4ldmQ%2BE',
     'TawkConnectionTime': '0',
+    'twk_uuid_65a8c13d0ff6374032c19e70': '%7B%22uuid%22%3A%221.1hHY7r9RpAtOmAKbJoN3XjgZqRObPn3R6LzR6QTFQuJRNl8qzOKDNAOhmdwMq8AWA4XvoEnTT7P2LpcfwRvs3NXBf27PqylzHeTcDXOwLNFVd6dRwFh%22%2C%22version%22%3A3%2C%22domain%22%3A%22qeapps.com%22%2C%22ts%22%3A1748589339943%7D',
 }
 
-HEADERS = {
+headers = {
     'accept': '*/*',
     'accept-language': 'en-US,en;q=0.9',
     'content-type': 'application/json',
     'origin': 'https://ai.qeapps.com',
     'priority': 'u=1, i',
     'referer': 'https://ai.qeapps.com/sidekick/?owner=rishabh',
-    'sec-ch-ua': '"Google Chrome";v="135", "Not-A.Brand";v="8", "Chromium";v="135"',
+    'sec-ch-ua': '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"',
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': '"Windows"',
     'sec-fetch-dest': 'empty',
     'sec-fetch-mode': 'cors',
     'sec-fetch-site': 'same-origin',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
     'x-requested-with': 'XMLHttpRequest',
+    # 'cookie': '_clck=tuurk7%7C2%7Cfwc%7C0%7C1973; connect.sid=s%3AYfI7ooqZMSZOgg4Fp7cqxe_kqQ1R-Dpj.rs%2FLqN5aSx6ANq6M1XiE2mCOswvUvp1YyNgf4ldmQ%2BE; TawkConnectionTime=0; twk_uuid_65a8c13d0ff6374032c19e70=%7B%22uuid%22%3A%221.1hHY7r9RpAtOmAKbJoN3XjgZqRObPn3R6LzR6QTFQuJRNl8qzOKDNAOhmdwMq8AWA4XvoEnTT7P2LpcfwRvs3NXBf27PqylzHeTcDXOwLNFVd6dRwFh%22%2C%22version%22%3A3%2C%22domain%22%3A%22qeapps.com%22%2C%22ts%22%3A1748589339943%7D',
 }
 
 def generate_folder_name():
@@ -56,7 +56,7 @@ def chat_with_gpt(prompt, hash_session="", api_call=1):
 
         logging.info(f"Final Payload Sent:\n{json.dumps(outer_payload, indent=2)}")
 
-        response = requests.post(API_URL, headers=HEADERS, cookies=cookies, json=outer_payload, timeout=120)
+        response = requests.post(API_URL, headers=headers, cookies=cookies, json=outer_payload, timeout=120)
 
         if response.status_code == 200:
             return response.text
