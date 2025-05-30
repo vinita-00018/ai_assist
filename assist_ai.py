@@ -102,11 +102,11 @@ def handle_send():
             # Restore stdout and get final output
             sys.stdout = sys_stdout_backup
             final_output = output_buffer.getvalue().strip()
-            st.session_state.chat_history.append({"sender": "AstroBot", "content": final_output})
+            st.session_state.chat_history.append({"sender": "AI-Bot", "content": final_output})
 
         except Exception as e:
             sys.stdout = sys_stdout_backup
-            st.session_state.chat_history.append({"sender": "AstroBot", "content": f"Error: {e}"})
+            st.session_state.chat_history.append({"sender": "AI-Bot", "content": f"Error: {e}"})
 
         st.session_state.input_text = ""
         st.session_state.api_call += 1
