@@ -141,7 +141,7 @@ def clear_chat():
     st.session_state.api_call = 1
 
 # === UI Layout ===
-st.title("AI + Shopify Assistant")
+st.title("🤖AI + Shopify Assistant")
 
 for message in st.session_state.chat_history:
     st.markdown(f"**{message['sender']}**: {message['content']}")
