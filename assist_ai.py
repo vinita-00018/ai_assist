@@ -7,10 +7,15 @@ import sys
 from bs4 import BeautifulSoup
 import requests
 import io
+import time
+import uuid
 
 # === Session Initialization ===
+# if "hash_session" not in st.session_state:
+#     st.session_state.hash_session = "c5e2ba3f-98fc-479e-83f8-5d052498c354525"
+
 if "hash_session" not in st.session_state:
-    st.session_state.hash_session = "c5e2ba3f-98fc-479e-83f8-5d052498c354525"
+    st.session_state.hash_session = str(uuid.uuid4())
 
 if "api_call" not in st.session_state:
     st.session_state.api_call = 1
@@ -54,35 +59,54 @@ def clean_code_format(code):
     return '\n'.join(cleaned_lines)
 
 
-# === Handle Send Button ===
+# === Handle User Input and Generate Code ===
 def handle_send():
     user_input = st.session_state.input_text
     if user_input:
         st.session_state.chat_history.append({"sender": "You", "content": user_input})
-        try:
-            full_prompt = f"""
-            User Question:
-            {user_input}
-            here is the following information:
-            SHOP=qeapptest
-            ACCESS_TOKEN=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
-            You are a Python coding agent that generates code using the requests library to call the Shopify Admin REST API (2023-10).
-            Use requests with the shop and token from environment variables.
-            Only return clean Python code (no markdown, no explanations,no loop,no conditional statement).
-            The last line must be: print(final_output)
-            The variable final_output should hold the data to return.
-            """
-            raw_response = chat_with_gpt(full_prompt, st.session_state.hash_session, st.session_state.api_call)
-              
-            # clean_code = extract_bot_response(raw_response)
-            clean_code = clean_code_format(extract_bot_response(raw_response))
 
-            # Print generated code for debugging
+        full_prompt = f"""
+        User Question:
+        {user_input}
+        here is the following information:
+        SHOP=qeapptest
+        ACCESS_TOKEN=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
+        You are a Python coding agent that generates code using the requests library to call the Shopify Admin REST API (2023-10).
+        Use requests with the shop and token from environment variables.
+        Only return clean Python code (no markdown, no explanations,no loop,no conditional statement).
+        The last line must be: print(final_output)
+        The variable final_output should hold the data to return.
+        """
+
+        max_retries = 10
+        retries = 0
+        clean_code = ""
+
+        while retries < max_retries:
+            try:
+                raw_response = chat_with_gpt(full_prompt, st.session_state.hash_session, st.session_state.api_call)
+                extracted = extract_bot_response(raw_response)
+                clean_code = clean_code_format(extracted)
+
+                if "print(final_output)" in clean_code:
+                    break  # Code is complete, proceed to execution
+            except Exception as e:
+                print(f"Retry {retries + 1} failed with error: {e}")
+
+            retries += 1
+            time.sleep(5)  # Short pause before retry
+
+        if "print(final_output)" not in clean_code:
+            st.session_state.chat_history.append({"sender": "AI Bot", "content": "Error: Failed to generate complete code after 10 retries."})
+            st.session_state.input_text = ""
+            return
+
+        # === Execute the cleaned code ===
+        try:
             print("\n======= GPT Generated Code =======")
             print(clean_code)
             print("==================================\n")
 
-            # Prepare environment for code execution
             output_buffer = io.StringIO()
             sys_stdout_backup = sys.stdout
             sys.stdout = output_buffer
@@ -98,15 +122,14 @@ def handle_send():
                 "timedelta": timedelta
             }
             exec(clean_code, exec_globals)
-            
-            # Restore stdout and get final output
+
             sys.stdout = sys_stdout_backup
             final_output = output_buffer.getvalue().strip()
-            st.session_state.chat_history.append({"sender": "AI-Bot", "content": final_output})
+            st.session_state.chat_history.append({"sender": "AI Bot", "content": final_output})
 
         except Exception as e:
             sys.stdout = sys_stdout_backup
-            st.session_state.chat_history.append({"sender": "AI-Bot", "content": f"Error: {e}"})
+            st.session_state.chat_history.append({"sender": "AI Bot", "content": f"Error during execution: {e}"})
 
         st.session_state.input_text = ""
         st.session_state.api_call += 1
